@@ -57,11 +57,23 @@ export default function Home() {
   const [notice, setNotice] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [annoyMode, setAnnoyMode] = useState(false);
+  const [generated, setGenerated] = useState<typeof achievements[number] | null>(null);
+
+  const visibleNotice = notice || (annoyMode ? "ملاحظة هامشية: أنت تقرأ عن عمر منذ مدة، وكان يمكن لعمر أن يشرح لك هذا أسرع." : "");
 
   const total = useMemo(() => achievements.length + 17, []);
 
   function createAchievement() {
-    setNotice("تم توثيق إنجاز جديد: عمر نجح في فتح الثلاجة دون أن ينسى لماذا فتحها. إنجاز نادر.");
+    const newAchievement = {
+      id: "06",
+      tag: "إدارة التفاصيل",
+      title: "فتح الثلاجة دون أن ينسى لماذا فتحها",
+      text: "في لحظة نادرة من التركيز، وصل عمر إلى الثلاجة، فتحها، وتذكر المهمة الأصلية قبل أن يضطر إلى الوقوف أمامها بصمت.",
+      aside: "تم تسجيل الواقعة كنجاح إداري صغير لكنه مهم.",
+      year: "اليوم",
+    };
+    setGenerated(newAchievement);
+    setNotice("تمت إضافة إنجاز جديد إلى السجل. لا تقلق، عمر كان يعرف أنه سيحدث.");
   }
 
   function randomNotice() {
@@ -109,7 +121,7 @@ export default function Home() {
           <div className="hero-footnote">* جميع الإنجازات خيالية، لكن نبرة الموقع واثقة بشكل مقلق.</div>
         </section>
 
-        {notice && <div className="notice-bar" role="status"><span>{notice}</span><button onClick={() => setNotice("")} aria-label="إغلاق الإشعار"><X size={16} /></button></div>}
+        {visibleNotice && <div className="notice-bar" role="status"><span>{visibleNotice}</span><button onClick={() => setNotice("")} aria-label="إغلاق الإشعار"><X size={16} /></button></div>}
         {annoyMode && <div className="annoy-banner"><span>وضع الإزعاج مفعّل.</span> سيتم تذكيرك كلما نسيت أن عمر يعرف أكثر منك بقليل.</div>}
 
         <section className="archive-section" id="archive">
@@ -119,7 +131,7 @@ export default function Home() {
           </div>
           <div className="archive-layout">
             <div className="achievement-list">
-              {achievements.map((item, index) => (
+              {[...achievements, ...(generated ? [generated] : [])].map((item) => (
                 <article className={selected?.id === item.id ? "achievement-row selected" : "achievement-row"} key={item.id} onClick={() => setSelected(item)}>
                   <div className="row-number">{item.id}<span>/</span></div>
                   <div className="row-main"><div className="row-tag">{item.tag}</div><h3>{item.title}</h3><p>{item.text}</p><button className="read-more">قراءة الملف <ArrowUpLeft size={15} /></button></div>
@@ -129,7 +141,7 @@ export default function Home() {
               ))}
             </div>
             <aside className="archive-sidebar">
-              <div className="side-card orange-card"><span className="side-card-label">إحصائية لا داعي لها</span><strong>{total}</strong><p>مجالًا يعرف عمر عنه كل شيء، بما فيها المجالات التي لم تُخترع بعد.</p></div>
+              <div className="side-card orange-card"><span className="side-card-label">إحصائية لا داعي لها</span><strong>{total + (generated ? 1 : 0)}</strong><p>مجالًا يعرف عمر عنه كل شيء، بما فيها المجالات التي لم تُخترع بعد.</p></div>
               <div className="side-card dark-card"><span className="side-card-label">هامش المحرر</span><p>«عمر لا يبحث عن إجابات. الإجابات تبحث عن طريقة مناسبة للاقتراب منه.»</p><span className="signature">— شخص لاحظ ذلك</span></div>
               <button className="add-button" onClick={createAchievement}><Plus size={17} /> أضف إنجازًا لا يعرفه عمر بعد</button>
             </aside>
@@ -141,6 +153,8 @@ export default function Home() {
           <div className="method-copy"><span className="section-kicker">المنهجية العلمية جدًا</span><h2>كيف نقيس<br /><em>العبقرية؟</em></h2></div>
           <div className="method-details"><p>نعتمد على ثلاث أدوات دقيقة: ثقة عمر بنفسه، قدرته على تحويل أي موقف عادي إلى أطروحة، ورفضه الهادئ للاعتراف بأنه لا يعرف شيئًا.</p><div className="meter-list"><div><span>الثقة</span><b>99.9%</b><i><u style={{ width: "99.9%" }} /></i></div><div><span>التواضع</span><b>0.4%</b><i><u style={{ width: "0.4%" }} /></i></div><div><span>الإقناع</span><b>88.8%</b><i><u style={{ width: "88.8%" }} /></i></div></div></div>
         </section>
+
+        <section className="disclaimer-section"><div className="disclaimer-icon">!</div><div><span className="section-kicker">تنويه ضروري جدًا</span><h2>لا تصدّق كل ما<br /><em>يبدو موثقًا.</em></h2></div><p>هذا الأرشيف عمل فني ساخر. كل الإنجازات من تأليف الموقع، ولا تمثل سيرة ذاتية حقيقية أو سجلًا رسميًا أو رأيًا صادرًا عن أي جهة.</p></section>
 
         <section className="about-section" id="about">
           <div className="about-mark">ع</div><div><span className="section-kicker">ملاحظة ختامية</span><h2>في النهاية،<br />عمر هو عمر.</h2></div><p>ولا نعرف إن كان هذا تفسيرًا كافيًا، لكنه بالتأكيد قاله بثقة. هذا الموقع عمل فني ساخر وجميع الإنجازات فيه وهمية ومبالغ فيها عمدًا.</p>
